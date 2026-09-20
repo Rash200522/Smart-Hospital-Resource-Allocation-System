@@ -440,5 +440,96 @@ void displayPatientsByPriority(void) {
     printSeparator();
 }
 
+/* REPORTS */
+void displayUrgencyStatistics(void) {
+    printf("\n--- Patient Statistics by Urgency ---\n");
+    int counts[3] = {0, 0, 0};
+    for (int i = 0; i < patientCount; i++)
+        counts[patientUrgency[i] - 1]++;
+    printf("Total Registered: %d\n\n", patientCount);
+    printf("  Level 1 (Normal):   %3d (%.1f%%)\n", counts[0],
+           patientCount ? counts[0]*100.0/patientCount : 0);
+    printf("  Level 2 (Urgent):   %3d (%.1f%%)\n", counts[1],
+           patientCount ? counts[1]*100.0/patientCount : 0);
+    printf("  Level 3 (Critical): %3d (%.1f%%)\n", counts[2],
+           patientCount ? counts[2]*100.0/patientCount : 0);
+}
 
+void displayRevenueStatistics(void) {
+    printf("\n--- Revenue Statistics ---\n");
+    double gross = 0, discounts = 0, revenue = 0;
+    for (int i = 0; i < patientCount; i++) {
+        int si = patientSpecialtyIDs[i] - 1;
+        double bf = specialtyFees[si];
+        double sc = calculateEmergencySurcharge(bf, patientUrgency[i]);
+        double wc = 0;
+        if (patientWardIDs[i] > 0)
+            wc = patientDaysAdmitted[i] * wardDailyRates[patientWardIDs[i]-1];
+        double g = bf + sc + wc;
+        double d = calculateAgeSubsidy(g, patientAges[i]);
+        gross += g;
+        discounts += d;
+        revenue += (g - d);
+    }
+    printf("Total Gross Billing:  LKR %.2f\n", gross);
+    printf("Total Discounts:      LKR %.2f\n", discounts);
+    printf("Total Net Revenue:    LKR %.2f\n", revenue);
+}
+
+void displayBedOccupancyReport(void) {
+    printf("\n--- Bed Occupancy Report ---\n\n");
+    printf("%-28s %-8s %-10s %-10s %-12s\n",
+           "Ward", "Total", "Occupied", "Available", "%");
+    printSeparator();
+    int tBeds = 0, tOcc = 0;
+    for (int i = 0; i < NUM_WARDS; i++) {
+        int cap = wardCapacities[i], occ = 0;
+        for (int j = 0; j < cap; j++)
+            if (bedOccupancy[i][j] == 1) occ++;
+        printf("%-28s %-8d %-10d %-10d %.1f%%\n",
+               wardNames[i], cap, occ, cap - occ,
+               cap ? occ*100.0/cap : 0);
+        tBeds += cap; tOcc += occ;
+    }
+    printSeparator();
+    printf("%-28s %-8d %-10d %-10d %.1f%%\n",
+           "TOTAL", tBeds, tOcc, tBeds - tOcc,
+           tBeds ? tOcc*100.0/tBeds : 0);
+}
+
+void displayHighestPayingPatient(void) {
+    printf("\n--- Highest Paying Patient ---\n");
+    if (patientCount == 0) { printf("No patients.\n"); return; }
+    int hi = 0;
+    for (int i = 1; i < patientCount; i++)
+        if (patientFinalBills[i] > patientFinalBills[hi]) hi = i;
+    printf("Patient ID:   %s\n", patientIDs[hi]);
+    printf("Patient Name: %s\n", patientNames[hi]);
+    printf("Total Bill:   LKR %.2f\n", patientFinalBills[hi]);
+}
+
+void generateReports(void) {
+    if (patientCount == 0) { printf("\n[INFO] No data.\n"); return; }
+    printHeader("REPORTS");
+    printf("  [1] Urgency Statistics\n");
+    printf("  [2] Revenue Statistics\n");
+    printf("  [3] Bed Occupancy\n");
+    printf("  [4] Highest Paying Patient\n");
+    printf("  [5] All Reports\n");
+    printf("  [0] Back\n");
+    printf("  Choice: ");
+    int c = getValidIntInput(0, 5);
+    switch (c) {
+        case 1: displayUrgencyStatistics(); break;
+        case 2: displayRevenueStatistics(); break;
+        case 3: displayBedOccupancyReport(); break;
+        case 4: displayHighestPayingPatient(); break;
+        case 5:
+            displayUrgencyStatistics();
+            displayRevenueStatistics();
+            displayBedOccupancyReport();
+            displayHighestPayingPatient();
+            break;
+    }
+}
 
