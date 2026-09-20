@@ -177,12 +177,12 @@ void generatePatientID(char *buffer, int index) {
 void displayMainMenu(void) {
        printf("\n");
     printSeparator();
-    printf("  ╔══════════════════════════════════════════════════════════════╗\n");
-    printf("  ║                                                              ║\n");
-    printf("  ║   %s v%s                                   ║\n", APP_NAME, APP_VERSION);
-    printf("  ║   CSC 1012 - University of Sri Jayewardenepura               ║\n");
-    printf("  ║                                                              ║\n");
-    printf("  ╚══════════════════════════════════════════════════════════════╝\n");
+    printf("  ================================================================\n");
+    printf("                                                                  \n");
+    printf("     %s v%s                                   ║\n", APP_NAME, APP_VERSION);
+    printf("     CSC 1012 - University of Sri Jayewardenepura                 \n");
+    printf("                                                                  \n");
+    printf("  ================================================================\n");
     printSeparator();
 
     printf("  [1]  Register New Patient\n");
@@ -351,51 +351,71 @@ void displayBill(int idx) {
     double discount = calculateAgeSubsidy(gross, age);
     double finalAmt = gross - discount;
 
-    double waitTime = (specialtyQueueCounts[specIdx]) * specialtyTimes[specIdx];
+    double waitTime = specialtyQueueCounts[specIdx] * specialtyTimes[specIdx];
 
+    printf("\n");
     printSeparator();
-    printf("           SMART HOSPITAL ADMISSION & BILL\n");
+    printf("                 SMART HOSPITAL ADMISSION & BILL\n");
     printSeparator();
-    printf("Patient ID: %s\n", patientIDs[idx]);
-    printf("Patient Name: %s\n", patientNames[idx]);
+
+    printf("  %-28s : %s\n", "Patient ID", patientIDs[idx]);
+    printf("  %-28s : %s\n", "Patient Name", patientNames[idx]);
+
     if (age < 5 || age > 65)
-        printf("Age: %d Years (15%% Subsidy Eligible)\n", age);
+        printf("  %-28s : %d Years (15%% Subsidy Eligible)\n", "Age", age);
     else
-        printf("Age: %d Years\n", age);
+        printf("  %-28s : %d Years\n", "Age", age);
 
-    printf("Specialty: %s\n", specialtyNames[specIdx]);
-    if (wardID > 0)
-        printf("Assigned Ward: %s (Bed #%02d)\n",
-               wardNames[wardID - 1], patientBedNumbers[idx]);
-    else
-        printf("Assigned Ward: Not Admitted (OPD)\n");
+    printf("  %-28s : %s\n", "Specialty", specialtyNames[specIdx]);
+
+    if (wardID > 0) {
+        char wardBed[50];
+        sprintf(wardBed, "%s (Bed #%02d)", wardNames[wardID - 1], patientBedNumbers[idx]);
+        printf("  %-28s : %s\n", "Assigned Ward", wardBed);
+    } else {
+        printf("  %-28s : %s\n", "Assigned Ward", "Not Admitted (OPD)");
+    }
 
     const char *urgencyText[] = {"Level 1 (Normal)", "Level 2 (Urgent)", "Level 3 (Critical)"};
-    printf("Urgency Level: %s\n", urgencyText[urgency - 1]);
-
-    printf("Base Consultation Fee: LKR %.2f\n", baseFee);
-
-    double surPct = (urgency == 3) ? 50.0 : (urgency == 2) ? 25.0 : 0.0;
-    printf("Emergency Surcharge: LKR %.2f (%.0f%%)\n", surcharge, surPct);
-
-    printf("Ward Stay Cost (%d Days): LKR %.2f\n", patientDaysAdmitted[idx], wardCost);
-    printf("Gross Total Bill: LKR %.2f\n", gross);
-
-    if (discount > 0)
-        printf("Age Subsidy Discount: LKR -%.2f (15%%)\n", discount);
-    else
-        printf("Age Subsidy Discount: LKR 0.00 (0%%)\n");
-
-    printf("Final Payable Amount: LKR %.2f\n", finalAmt);
-
-    if (urgency == 3)
-        printf("Estimated Waiting Time: 0.00 mins (Immediate Attention)\n");
-    else
-        printf("Estimated Waiting Time: %.2f mins\n", waitTime);
+    printf("  %-28s : %s\n", "Urgency Level", urgencyText[urgency - 1]);
 
     printSeparator();
-}
 
+    printf("  %-28s : LKR %10.2f\n", "Base Consultation Fee", baseFee);
+
+    double surPct = (urgency == 3) ? 50.0 : (urgency == 2) ? 25.0 : 0.0;
+    char surLine[30];
+    sprintf(surLine, "LKR %.2f (%.0f%%)", surcharge, surPct);
+    printf("  %-28s : %s\n", "Emergency Surcharge", surLine);
+
+    char wardLine[30];
+    sprintf(wardLine, "LKR %.2f", wardCost);
+    char wardLabel[50];
+    sprintf(wardLabel, "Ward Stay Cost (%d Days)", patientDaysAdmitted[idx]);
+    printf("  %-28s : %s\n", wardLabel, wardLine);
+
+    printf("  %-28s : LKR %10.2f\n", "Gross Total Bill", gross);
+
+    if (discount > 0) {
+        char discLine[30];
+        sprintf(discLine, "LKR -%.2f (15%%)", discount);
+        printf("  %-28s : %s\n", "Age Subsidy Discount", discLine);
+    } else {
+        printf("  %-28s : LKR 0.00 (0%%)\n", "Age Subsidy Discount");
+    }
+
+    printSeparator();
+    printf("  %-28s : LKR %10.2f\n", "FINAL PAYABLE AMOUNT", finalAmt);
+    printSeparator();
+
+    if (urgency == 3)
+        printf("  Estimated Waiting Time : 0.00 mins (Immediate Attention)\n");
+    else
+        printf("  Estimated Waiting Time : %.2f mins\n", waitTime);
+
+    printSeparator();
+    printf("\n");
+}
 
 /* priority sorting */
 
