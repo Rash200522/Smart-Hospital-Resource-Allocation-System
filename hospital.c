@@ -533,3 +533,59 @@ void generateReports(void) {
     }
 }
 
+/* FILE HANDLING  */
+void loadBedStatusFromFile(void) {
+    FILE *f = fopen("data/beds_status.txt", "r");
+    if (f == NULL) {
+        printf("[INFO] No previous bed data.\n");
+        return;
+    }
+    int w, b, s, loaded = 0;
+    while (fscanf(f, "%d %d %d", &w, &b, &s) == 3) {
+        if (w >= 0 && w < NUM_WARDS && b >= 0 && b < MAX_BEDS_PER_WARD) {
+            bedOccupancy[w][b] = s;
+            loaded++;
+        }
+    }
+    fclose(f);
+    printf("[SYSTEM] Loaded %d bed statuses.\n", loaded);
+}
+
+void saveBedStatusToFile(void) {
+    FILE *f = fopen("data/beds_status.txt", "w");
+    if (f == NULL) { printf("[ERROR] Cannot save!\n"); return; }
+    for (int i = 0; i < NUM_WARDS; i++)
+        for (int j = 0; j < wardCapacities[i]; j++)
+            fprintf(f, "%d %d %d\n", i, j, bedOccupancy[i][j]);
+    fclose(f);
+    printf("[SYSTEM] Bed status saved.\n");
+}
+
+void appendPatientRecord(int idx) {
+    FILE *f = fopen("data/patient_records.txt", "a");
+    if (f == NULL) return;
+    time_t now = time(NULL);
+    char ts[30];
+    strftime(ts, sizeof(ts), "%Y-%m-%d %H:%M:%S", localtime(&now));
+    fprintf(f, "========================================\n");
+    fprintf(f, "Time: %s\n", ts);
+    fprintf(f, "ID: %s | Name: %s | Age: %d\n",
+            patientIDs[idx], patientNames[idx], patientAges[idx]);
+    fprintf(f, "Urgency: %d | Specialty: %s\n",
+            patientUrgency[idx],
+            specialtyNames[patientSpecialtyIDs[idx]-1]);
+    fprintf(f, "Final Amount: LKR %.2f\n", patientFinalBills[idx]);
+    fprintf(f, "========================================\n\n");
+    fclose(f);
+}
+
+void loadPatientRecords(void) {
+    FILE *f = fopen("data/patient_records.txt", "r");
+    if (f == NULL) { printf("[INFO] No previous records.\n"); return; }
+    char line[256];
+    int cnt = 0;
+    while (fgets(line, sizeof(line), f))
+        if (strstr(line, "ID:") != NULL) cnt++;
+    fclose(f);
+    printf("[SYSTEM] Found %d historical records.\n", cnt);
+}
