@@ -465,21 +465,29 @@ void displayPatientsByPriority(void) {
 
 /* REPORTS */
 void displayUrgencyStatistics(void) {
-    printf("\n--- Patient Statistics by Urgency ---\n");
+    printHeader("PATIENT STATISTICS BY URGENCY LEVEL");
+
     int counts[3] = {0, 0, 0};
     for (int i = 0; i < patientCount; i++)
         counts[patientUrgency[i] - 1]++;
-    printf("Total Registered: %d\n\n", patientCount);
-    printf("  Level 1 (Normal):   %3d (%.1f%%)\n", counts[0],
+
+    printf("  Total Registered Patients: %d\n\n", patientCount);
+
+    printf("  +---------------------+----------+----------+\n");
+    printf("  | %-19s | %-8s | %-8s |\n", "Level", "Count", "Percent");
+    printf("  +---------------------+----------+----------+\n");
+    printf("  | %-19s | %8d | %7.1f%% |\n", "Level 1 (Normal)", counts[0],
            patientCount ? counts[0]*100.0/patientCount : 0);
-    printf("  Level 2 (Urgent):   %3d (%.1f%%)\n", counts[1],
+    printf("  | %-19s | %8d | %7.1f%% |\n", "Level 2 (Urgent)", counts[1],
            patientCount ? counts[1]*100.0/patientCount : 0);
-    printf("  Level 3 (Critical): %3d (%.1f%%)\n", counts[2],
+    printf("  | %-19s | %8d | %7.1f%% |\n", "Level 3 (Critical)", counts[2],
            patientCount ? counts[2]*100.0/patientCount : 0);
+    printf("  +---------------------+----------+----------+\n");
 }
 
 void displayRevenueStatistics(void) {
-    printf("\n--- Revenue Statistics ---\n");
+    printHeader("REVENUE & DISCOUNT STATISTICS");
+
     double gross = 0, discounts = 0, revenue = 0;
     for (int i = 0; i < patientCount; i++) {
         int si = patientSpecialtyIDs[i] - 1;
@@ -494,9 +502,17 @@ void displayRevenueStatistics(void) {
         discounts += d;
         revenue += (g - d);
     }
-    printf("Total Gross Billing:  LKR %.2f\n", gross);
-    printf("Total Discounts:      LKR %.2f\n", discounts);
-    printf("Total Net Revenue:    LKR %.2f\n", revenue);
+
+    printf("  +--------------------------------+-------------------+\n");
+    printf("  | %-30s | %17s |\n", "Metric", "Amount (LKR)");
+    printf("  +--------------------------------+-------------------+\n");
+    printf("  | %-30s | %17.2f |\n", "Total Gross Billing", gross);
+    printf("  | %-30s | %17.2f |\n", "Total Discounts Given", discounts);
+    printf("  | %-30s | %17.2f |\n", "Total Net Revenue", revenue);
+    printf("  +--------------------------------+-------------------+\n");
+    printf("  | %-30s | %17.2f |\n", "Average Bill per Patient",
+           patientCount ? revenue / patientCount : 0);
+    printf("  +--------------------------------+-------------------+\n");
 }
 
 void displayBedOccupancyReport(void) {
