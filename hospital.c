@@ -177,14 +177,16 @@ void generatePatientID(char *buffer, int index) {
 void displayMainMenu(void) {
        printf("\n");
     printSeparator();
-    printf("  ================================================================\n");
+
     printf("                                                                  \n");
-    printf("     %s v%s                                   ║\n", APP_NAME, APP_VERSION);
+    printf("     %s v%s                                  \n", APP_NAME, APP_VERSION);
     printf("     CSC 1012 - University of Sri Jayewardenepura                 \n");
     printf("                                                                  \n");
-    printf("  ================================================================\n");
-    printSeparator();
 
+    printSeparator();
+    printf("  Status: %d patient(s) registered | %s v%s\n",
+           patientCount, APP_NAME, APP_VERSION);
+    printSeparator();
     printf("  [1]  Register New Patient\n");
     printf("  [2]  View Patients by Priority (Emergency Triage)\n");
     printf("  [3]  View All Registered Patients\n");
