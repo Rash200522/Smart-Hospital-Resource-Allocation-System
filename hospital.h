@@ -41,42 +41,95 @@ extern int patientCount;
 extern int bedOccupancy[NUM_WARDS][MAX_BEDS_PER_WARD];
 extern int specialtyQueueCounts[NUM_SPECIALTIES];
 
-/* Function prototypes */
+//function prototype
+//creates data forlder if it missing
 void ensureDataFolderExists(void);
+
+//initialize all data structure
 void initializeSystem(void);
+
+//sets all beds to available
 void initializeBedOccupancy(void);
+
+//reads beds occupy data
 void loadBedStatusFromFile(void);
+
+//current bed occupancy
 void saveBedStatusToFile(void);
 
+//display main menu
 void displayMainMenu(void);
+
+//display doctor with fees and time
 void displaySpecialtyMenu(void);
+
+//display wards with rates and availability
 void displayWardMenu(void);
 
+//handle patient registration process
 void registerNewPatient(void);
+
+//finds available beds
 int findAvailableBed(int wardIndex);
+
+//records occupied beds
 void assignBedToPatient(int patientIndex, int wardIndex);
+
+//calculate emegency syrcharge
 double calculateEmergencySurcharge(double baseFee, int urgencyLevel);
+
+//Calculates 15% age subsidy for age<5 or age>65
 double calculateAgeSubsidy(double grossTotal, int age);
+
+//calculate estimated waiting time
 double calculateWaitingTime(int specialtyIndex);
+
+//display formatted bill
 void displayBill(int patientIndex);
 
+//display patients sorts by urgency
 void displayPatientsByPriority(void);
+
+//Sorts patient indices by priority using bubble sort
 void sortPatientsByPriority(int sortedIndices[], int count);
 
+//display report menu
 void generateReports(void);
+
+//display urgency level statistic
 void displayUrgencyStatistics(void);
+
+//display revenue
 void displayRevenueStatistics(void);
+
+//display bed occupancy
 void displayBedOccupancyReport(void);
+
+//display highest paying patient info
 void displayHighestPayingPatient(void);
 
+//Appends a patient record to data/patient_records.txt
 void appendPatientRecord(int patientIndex);
+
+// Reads and counts past patient records
 void loadPatientRecords(void);
 
+//clear input buffer
 void clearInputBuffer(void);
+
+//reads integer
 int getValidIntInput(int min, int max);
-void getValidStringInput(char *buffer, int maxLength);
+
+//reads non empty string without digit
+void getValidStringInput(char *buffer, int maxLength
+
+ //prints horizontal line
 void printSeparator(void);
+
+//prints centered header with seperator
 void printHeader(const char *title);
+
+//generate patient id
 void generatePatientID(char *buffer, int index);
 
 #endif
