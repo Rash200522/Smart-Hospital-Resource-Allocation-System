@@ -124,7 +124,7 @@ void clearInputBuffer(void);
 int getValidIntInput(int min, int max);
 
 //reads non empty string without digit
-void getValidStringInput(char *buffer, int maxLength
+void getValidStringInput(char *buffer, int maxLength);
 
  //prints horizontal line
 void printSeparator(void);

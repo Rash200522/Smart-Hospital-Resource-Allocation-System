@@ -193,7 +193,7 @@ void displayMainMenu(void) {
     printf("  [6]  Save & Exit\n");
     printSeparator();
     printf("  Enter your choice (1-6): ");
-}s
+}
 
 void displaySpecialtyMenu(void) {
     printf("\n--- Available Specialties ---\n");
@@ -238,5 +238,100 @@ double calculateAgeSubsidy(double grossTotal, int age) {
 
 double calculateWaitingTime(int specialtyIndex) {
     return specialtyQueueCounts[specialtyIndex] * (double)specialtyTimes[specialtyIndex];
+}
+
+
+
+//bed management
+int findAvailableBed(int wardIndex) {
+    for (int i = 0; i < wardCapacities[wardIndex]; i++)
+        if (bedOccupancy[wardIndex][i] == 0) return i;
+    return -1;
+}
+
+void assignBedToPatient(int patientIndex, int wardIndex) {
+    for (int i = 0; i < wardCapacities[wardIndex]; i++) {
+        if (bedOccupancy[wardIndex][i] == 0) {
+            bedOccupancy[wardIndex][i] = 1;
+            patientBedNumbers[patientIndex] = i + 1;
+            return;
+        }
+    }
+}
+
+
+/* patients registration  */
+void registerNewPatient(void) {
+    if (patientCount >= MAX_PATIENTS) {
+        printf("\n[ERROR] Maximum patients reached!\n");
+        return;
+    }
+
+    printHeader("NEW PATIENT REGISTRATION");
+    int idx = patientCount;
+    generatePatientID(patientIDs[idx], idx);
+    printf("  Patient ID: %s\n\n", patientIDs[idx]);
+
+    printf("  Patient Name: ");
+    getValidStringInput(patientNames[idx], MAX_NAME_LENGTH);
+
+    printf("  Patient Age (0-120): ");
+    patientAges[idx] = getValidIntInput(0, 120);
+
+    printf("\n  Urgency Level:\n    1-Normal  2-Urgent  3-Critical\n  Select (1-3): ");
+    patientUrgency[idx] = getValidIntInput(1, 3);
+
+    displaySpecialtyMenu();
+    printf("\n  Select Specialty ID (1-%d): ", NUM_SPECIALTIES);
+    int specChoice = getValidIntInput(1, NUM_SPECIALTIES);
+    patientSpecialtyIDs[idx] = specChoice;
+    int specIdx = specChoice - 1;
+
+    printf("\n  Admitted to ward? (1=Yes, 0=No): ");
+    int isAdmitted = getValidIntInput(0, 1);
+
+    if (isAdmitted == 1) {
+        displayWardMenu();
+        printf("\n  Select Ward ID (1-%d): ", NUM_WARDS);
+        int wardChoice = getValidIntInput(1, NUM_WARDS);
+        int wardIdx = wardChoice - 1;
+
+        int bedNum = findAvailableBed(wardIdx);
+        if (bedNum == -1) {
+            printf("\n[ERROR] No beds in %s! Registered as OPD.\n", wardNames[wardIdx]);
+            patientWardIDs[idx] = 0;
+            patientDaysAdmitted[idx] = 0;
+            patientBedNumbers[idx] = -1;
+        } else {
+            patientWardIDs[idx] = wardChoice;
+            printf("  Days Admitted: ");
+            patientDaysAdmitted[idx] = getValidIntInput(1, 365);
+            assignBedToPatient(idx, wardIdx);
+            printf("\n  [SUCCESS] Bed #%02d in %s\n",
+                   patientBedNumbers[idx], wardNames[wardIdx]);
+        }
+    } else {
+        patientWardIDs[idx] = 0;
+        patientDaysAdmitted[idx] = 0;
+        patientBedNumbers[idx] = -1;
+        printf("\n  Registered as OPD.\n");
+    }
+
+    /* Calculate bill */
+    double baseFee = specialtyFees[specIdx];
+    double surcharge = calculateEmergencySurcharge(baseFee, patientUrgency[idx]);
+    double wardCost = 0.0;
+    if (patientWardIDs[idx] > 0) {
+        wardCost = patientDaysAdmitted[idx] * wardDailyRates[patientWardIDs[idx] - 1];
+    }
+    double gross = baseFee + surcharge + wardCost;
+    double discount = calculateAgeSubsidy(gross, patientAges[idx]);
+    patientFinalBills[idx] = gross - discount;
+
+    displayBill(idx);
+    specialtyQueueCounts[specIdx]++;
+    patientCount++;
+
+    printf("\n[SYSTEM] Patient registered. Total: %d\n", patientCount);
 }
 
