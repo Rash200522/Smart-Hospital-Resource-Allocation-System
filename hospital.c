@@ -1,6 +1,6 @@
 #include "hospital.h"
 
-/* ========== LOOKUP DATA ========== */
+//lookup data
 const int specialtyIDs[NUM_SPECIALTIES] = {1, 2, 3, 4};
 const char *specialtyNames[NUM_SPECIALTIES] = {
     "General Practice (OPD)", "Paediatrics", "Cardiology", "Neurology"
@@ -16,7 +16,7 @@ const char *wardNames[NUM_WARDS] = {
 const double wardDailyRates[NUM_WARDS] = {3000.00, 6000.00, 12000.00, 25000.00};
 const int wardCapacities[NUM_WARDS] = {20, 10, 10, 5};
 
-/* ========== GLOBAL DATA ========== */
+//global data
 char patientNames[MAX_PATIENTS][MAX_NAME_LENGTH];
 int patientAges[MAX_PATIENTS];
 int patientUrgency[MAX_PATIENTS];
@@ -31,7 +31,7 @@ int patientCount = 0;
 int bedOccupancy[NUM_WARDS][MAX_BEDS_PER_WARD];
 int specialtyQueueCounts[NUM_SPECIALTIES];
 
-/* ========== INITIALIZATION ========== */
+//initialization
 void ensureDataFolderExists(void) {
     FILE *test = fopen("data/beds_status.txt", "a");
     if (test == NULL) {
@@ -68,7 +68,8 @@ void initializeBedOccupancy(void) {
             bedOccupancy[i][j] = 0;
 }
 
-/* ========== UTILITY FUNCTIONS ========== */
+//utility functions
+
 void clearInputBuffer(void) {
     int c;
     while ((c = getchar()) != '\n' && c != EOF);
@@ -77,29 +78,81 @@ void clearInputBuffer(void) {
 int getValidIntInput(int min, int max) {
     int value;
     char buffer[100];
+    char extra;
+
     while (1) {
-        if (fgets(buffer, sizeof(buffer), stdin) == NULL) continue;
+
+        if (fgets(buffer, sizeof(buffer), stdin) == NULL) {
+            /* Handle Ctrl+D / EOF gracefully */
+            printf("\n[ERROR] Input stream closed. Exiting.\n");
+            exit(1);
+        }
+
         buffer[strcspn(buffer, "\n")] = '\0';
-        if (sscanf(buffer, "%d", &value) != 1) {
-            printf("  [ERROR] Invalid input. Try again: ");
+
+        if (strlen(buffer) == 0) {
+            printf("  [ERROR] Input cannot be empty. Try again: ");
             continue;
         }
+
+        //Strict parsing: reject "12abc", accept "12" only if followed by nothing
+        if (sscanf(buffer, "%d %c", &value, &extra) != 1) {
+            printf("  [ERROR] '%s' is not a valid integer. Try again: ", buffer);
+            continue;
+        }
+
+        //range check
         if (value < min || value > max) {
-            printf("  [ERROR] Enter value between %d and %d: ", min, max);
+            printf("  [ERROR] Value must be between %d and %d. Try again: ", min, max);
             continue;
         }
+
         return value;
     }
 }
 
 void getValidStringInput(char *buffer, int maxLength) {
     while (1) {
-        if (fgets(buffer, maxLength, stdin) == NULL) continue;
+        if (fgets(buffer, maxLength, stdin) == NULL) {
+            printf("\n[ERROR] Input stream closed. Exiting.\n");
+            exit(1);
+        }
+
+        //remove new line
         buffer[strcspn(buffer, "\n")] = '\0';
+
+
         if (strlen(buffer) == 0) {
-            printf("  [ERROR] Cannot be empty. Try again: ");
+            printf("  [ERROR] Input cannot be empty. Try again: ");
             continue;
         }
+
+
+        int hasNonSpace = 0;
+        for (int i = 0; buffer[i] != '\0'; i++) {
+            if (!isspace((unsigned char)buffer[i])) {
+                hasNonSpace = 1;
+                break;
+            }
+        }
+        if (!hasNonSpace) {
+            printf("  [ERROR] Input cannot be only spaces. Try again: ");
+            continue;
+        }
+
+
+        int hasDigit = 0;
+        for (int i = 0; buffer[i] != '\0'; i++) {
+            if (isdigit((unsigned char)buffer[i])) {
+                hasDigit = 1;
+                break;
+            }
+        }
+        if (hasDigit) {
+            printf("  [ERROR] Name should not contain digits. Try again: ");
+            continue;
+        }
+
         return;
     }
 }
@@ -162,6 +215,3 @@ void displayWardMenu(void) {
                wardCapacities[i], avail);
     }
 }
-
-
-
