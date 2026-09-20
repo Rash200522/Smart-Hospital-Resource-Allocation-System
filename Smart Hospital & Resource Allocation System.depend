@@ -1,0 +1,13 @@
+# depslib dependency file v1.0
+1789880528 source:e:\university\cs\introduction to computer programming(csc1012)\smart hospital and resource allocation system\smart hospital & resource allocation system\hospital.c
+
+1789880872 source:e:\university\cs\introduction to computer programming(csc1012)\smart hospital and resource allocation system\smart hospital & resource allocation system\main.c
+	"hospital.h"
+
+1789882360 e:\university\cs\introduction to computer programming(csc1012)\smart hospital and resource allocation system\smart hospital & resource allocation system\hospital.h
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<ctype.h>
+	<time.h>
+

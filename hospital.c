@@ -1,0 +1,120 @@
+#include "hospital.h"
+
+/* ========== LOOKUP DATA ========== */
+const int specialtyIDs[NUM_SPECIALTIES] = {1, 2, 3, 4};
+const char *specialtyNames[NUM_SPECIALTIES] = {
+    "General Practice (OPD)", "Paediatrics", "Cardiology", "Neurology"
+};
+const double specialtyFees[NUM_SPECIALTIES] = {1500.00, 2500.00, 4500.00, 5000.00};
+const int specialtyTimes[NUM_SPECIALTIES] = {15, 20, 30, 30};
+const int specialtyCaps[NUM_SPECIALTIES] = {30, 20, 12, 10};
+
+const int wardIDs[NUM_WARDS] = {1, 2, 3, 4};
+const char *wardNames[NUM_WARDS] = {
+    "General Ward", "Paediatric Ward", "Surgical Ward", "ICU (Intensive Care Unit)"
+};
+const double wardDailyRates[NUM_WARDS] = {3000.00, 6000.00, 12000.00, 25000.00};
+const int wardCapacities[NUM_WARDS] = {20, 10, 10, 5};
+
+/* ========== GLOBAL DATA ========== */
+char patientNames[MAX_PATIENTS][MAX_NAME_LENGTH];
+int patientAges[MAX_PATIENTS];
+int patientUrgency[MAX_PATIENTS];
+int patientSpecialtyIDs[MAX_PATIENTS];
+int patientWardIDs[MAX_PATIENTS];
+int patientDaysAdmitted[MAX_PATIENTS];
+int patientBedNumbers[MAX_PATIENTS];
+double patientFinalBills[MAX_PATIENTS];
+char patientIDs[MAX_PATIENTS][10];
+int patientCount = 0;
+
+int bedOccupancy[NUM_WARDS][MAX_BEDS_PER_WARD];
+int specialtyQueueCounts[NUM_SPECIALTIES];
+
+/* ========== INITIALIZATION ========== */
+void ensureDataFolderExists(void) {
+    FILE *test = fopen("data/beds_status.txt", "a");
+    if (test == NULL) {
+        #ifdef _WIN32
+            system("mkdir data");
+        #else
+            system("mkdir -p data");
+        #endif
+        test = fopen("data/beds_status.txt", "a");
+    }
+    if (test != NULL) fclose(test);
+}
+
+void initializeSystem(void) {
+    initializeBedOccupancy();
+    for (int i = 0; i < NUM_SPECIALTIES; i++) specialtyQueueCounts[i] = 0;
+    for (int i = 0; i < MAX_PATIENTS; i++) {
+        patientNames[i][0] = '\0';
+        patientAges[i] = 0;
+        patientUrgency[i] = 0;
+        patientSpecialtyIDs[i] = 0;
+        patientWardIDs[i] = 0;
+        patientDaysAdmitted[i] = 0;
+        patientBedNumbers[i] = -1;
+        patientFinalBills[i] = 0.0;
+        patientIDs[i][0] = '\0';
+    }
+    printf("[SYSTEM] Hospital system initialized.\n");
+}
+
+void initializeBedOccupancy(void) {
+    for (int i = 0; i < NUM_WARDS; i++)
+        for (int j = 0; j < MAX_BEDS_PER_WARD; j++)
+            bedOccupancy[i][j] = 0;
+}
+
+/* ========== UTILITY FUNCTIONS ========== */
+void clearInputBuffer(void) {
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
+}
+
+int getValidIntInput(int min, int max) {
+    int value;
+    char buffer[100];
+    while (1) {
+        if (fgets(buffer, sizeof(buffer), stdin) == NULL) continue;
+        buffer[strcspn(buffer, "\n")] = '\0';
+        if (sscanf(buffer, "%d", &value) != 1) {
+            printf("  [ERROR] Invalid input. Try again: ");
+            continue;
+        }
+        if (value < min || value > max) {
+            printf("  [ERROR] Enter value between %d and %d: ", min, max);
+            continue;
+        }
+        return value;
+    }
+}
+
+void getValidStringInput(char *buffer, int maxLength) {
+    while (1) {
+        if (fgets(buffer, maxLength, stdin) == NULL) continue;
+        buffer[strcspn(buffer, "\n")] = '\0';
+        if (strlen(buffer) == 0) {
+            printf("  [ERROR] Cannot be empty. Try again: ");
+            continue;
+        }
+        return;
+    }
+}
+
+void printSeparator(void) {
+    printf("================================================================================\n");
+}
+
+void printHeader(const char *title) {
+    printf("\n");
+    printSeparator();
+    printf("  %s\n", title);
+    printSeparator();
+}
+
+void generatePatientID(char *buffer, int index) {
+    sprintf(buffer, "PAT-%d", 1001 + index);
+}
