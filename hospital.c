@@ -448,16 +448,17 @@ void displayPatientsByPriority(void) {
     for (int i = 0; i < patientCount; i++) sorted[i] = i;
     sortPatientsByPriority(sorted, patientCount);
 
-    printf("%-5s %-12s %-25s %-6s %-10s %-25s\n",
-           "Rank", "ID", "Name", "Age", "Urgency", "Specialty");
+    printf("%-5s %-12s %-22s %-5s %-10s %-22s %-15s\n",
+           "Rank", "ID", "Name", "Age", "Urgency", "Specialty", "Final Bill");
     printSeparator();
     for (int i = 0; i < patientCount; i++) {
         int idx = sorted[i];
         const char *ut[] = {"NORMAL", "URGENT", "CRITICAL"};
-        printf("%-5d %-12s %-25s %-6d %-10s %-25s\n",
+        printf("%-5d %-12s %-22s %-5d %-10s %-22s LKR %-11.2f\n",
                i + 1, patientIDs[idx], patientNames[idx],
                patientAges[idx], ut[patientUrgency[idx] - 1],
-               specialtyNames[patientSpecialtyIDs[idx] - 1]);
+               specialtyNames[patientSpecialtyIDs[idx] - 1],
+               patientFinalBills[idx]);
     }
     printSeparator();
 }
