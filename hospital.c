@@ -33,16 +33,31 @@ int specialtyQueueCounts[NUM_SPECIALTIES];
 
 //initialization
 void ensureDataFolderExists(void) {
+    /* Try opening the file for writing */
     FILE *test = fopen("data/beds_status.txt", "a");
+
     if (test == NULL) {
+        printf("[SYSTEM] Data folder missing. Creating it...\n");
+
         #ifdef _WIN32
-            system("mkdir data");
+            int result = system("mkdir data 2>nul");
         #else
-            system("mkdir -p data");
+            int result = system("mkdir -p data");
         #endif
+
+        if (result != 0) {
+            printf("[WARNING] Could not create data folder.\n");
+            printf("[WARNING] Files will not be saved.\n");
+            return;
+        }
+
         test = fopen("data/beds_status.txt", "a");
     }
-    if (test != NULL) fclose(test);
+
+    if (test != NULL) {
+        fclose(test);
+        printf("[SYSTEM] Data folder ready.\n");
+    }
 }
 
 void initializeSystem(void) {
@@ -599,7 +614,10 @@ void loadBedStatusFromFile(void) {
 
 void saveBedStatusToFile(void) {
     FILE *f = fopen("data/beds_status.txt", "w");
-    if (f == NULL) { printf("[ERROR] Cannot save!\n"); return; }
+       if (f == NULL) {
+        printf("[ERROR] Cannot save bed status - file system issue.\n");
+        return;
+    }
     for (int i = 0; i < NUM_WARDS; i++)
         for (int j = 0; j < wardCapacities[i]; j++)
             fprintf(f, "%d %d %d\n", i, j, bedOccupancy[i][j]);
