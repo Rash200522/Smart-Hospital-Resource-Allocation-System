@@ -177,17 +177,20 @@ void generatePatientID(char *buffer, int index) {
 void displayMainMenu(void) {
     printf("\n");
     printSeparator();
-    printf("       SMART HOSPITAL PATIENT & RESOURCE ALLOCATION SYSTEM\n");
+    printf("    ╔══════════════════════════════════════════════════════╗\n");
+    printf("    ║   SMART HOSPITAL PATIENT & RESOURCE ALLOCATION       ║\n");
+    printf("    ║   University of Sri Jayewardenepura - CSC 1012       ║\n");
+    printf("    ╚══════════════════════════════════════════════════════╝\n");
     printSeparator();
-    printf("  [1] Register New Patient\n");
-    printf("  [2] View Patients by Priority\n");
-    printf("  [3] View All Registered Patients\n");
-    printf("  [4] Generate Reports & Analytics\n");
-    printf("  [5] View Bed Occupancy Status\n");
-    printf("  [6] Save & Exit\n");
+    printf("  [1]  Register New Patient\n");
+    printf("  [2]  View Patients by Priority (Emergency Triage)\n");
+    printf("  [3]  View All Registered Patients\n");
+    printf("  [4]  Generate Reports & Analytics\n");
+    printf("  [5]  View Bed Occupancy Status\n");
+    printf("  [6]  Save & Exit\n");
     printSeparator();
     printf("  Enter your choice (1-6): ");
-}
+}s
 
 void displaySpecialtyMenu(void) {
     printf("\n--- Available Specialties ---\n");
