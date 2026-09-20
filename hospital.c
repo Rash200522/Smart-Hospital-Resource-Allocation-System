@@ -221,3 +221,22 @@ void displayWardMenu(void) {
                wardCapacities[i], avail);
     }
 }
+
+//billing calculation
+double calculateEmergencySurcharge(double baseFee, int urgencyLevel) {
+    switch (urgencyLevel) {
+        case 3: return baseFee * 0.50;
+        case 2: return baseFee * 0.25;
+        default: return 0.0;
+    }
+}
+
+double calculateAgeSubsidy(double grossTotal, int age) {
+    if (age < 5 || age > 65) return grossTotal * 0.15;
+    return 0.0;
+}
+
+double calculateWaitingTime(int specialtyIndex) {
+    return specialtyQueueCounts[specialtyIndex] * (double)specialtyTimes[specialtyIndex];
+}
+
