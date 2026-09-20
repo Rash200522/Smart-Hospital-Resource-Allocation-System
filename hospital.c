@@ -335,3 +335,63 @@ void registerNewPatient(void) {
     printf("\n[SYSTEM] Patient registered. Total: %d\n", patientCount);
 }
 
+/* bill display */
+void displayBill(int idx) {
+    int specIdx = patientSpecialtyIDs[idx] - 1;
+    int urgency = patientUrgency[idx];
+    int age = patientAges[idx];
+    int wardID = patientWardIDs[idx];
+
+    double baseFee = specialtyFees[specIdx];
+    double surcharge = calculateEmergencySurcharge(baseFee, urgency);
+    double wardCost = 0.0;
+    if (wardID > 0)
+        wardCost = patientDaysAdmitted[idx] * wardDailyRates[wardID - 1];
+    double gross = baseFee + surcharge + wardCost;
+    double discount = calculateAgeSubsidy(gross, age);
+    double finalAmt = gross - discount;
+
+    double waitTime = (specialtyQueueCounts[specIdx]) * specialtyTimes[specIdx];
+
+    printSeparator();
+    printf("           SMART HOSPITAL ADMISSION & BILL\n");
+    printSeparator();
+    printf("Patient ID: %s\n", patientIDs[idx]);
+    printf("Patient Name: %s\n", patientNames[idx]);
+    if (age < 5 || age > 65)
+        printf("Age: %d Years (15%% Subsidy Eligible)\n", age);
+    else
+        printf("Age: %d Years\n", age);
+
+    printf("Specialty: %s\n", specialtyNames[specIdx]);
+    if (wardID > 0)
+        printf("Assigned Ward: %s (Bed #%02d)\n",
+               wardNames[wardID - 1], patientBedNumbers[idx]);
+    else
+        printf("Assigned Ward: Not Admitted (OPD)\n");
+
+    const char *urgencyText[] = {"Level 1 (Normal)", "Level 2 (Urgent)", "Level 3 (Critical)"};
+    printf("Urgency Level: %s\n", urgencyText[urgency - 1]);
+
+    printf("Base Consultation Fee: LKR %.2f\n", baseFee);
+
+    double surPct = (urgency == 3) ? 50.0 : (urgency == 2) ? 25.0 : 0.0;
+    printf("Emergency Surcharge: LKR %.2f (%.0f%%)\n", surcharge, surPct);
+
+    printf("Ward Stay Cost (%d Days): LKR %.2f\n", patientDaysAdmitted[idx], wardCost);
+    printf("Gross Total Bill: LKR %.2f\n", gross);
+
+    if (discount > 0)
+        printf("Age Subsidy Discount: LKR -%.2f (15%%)\n", discount);
+    else
+        printf("Age Subsidy Discount: LKR 0.00 (0%%)\n");
+
+    printf("Final Payable Amount: LKR %.2f\n", finalAmt);
+
+    if (urgency == 3)
+        printf("Estimated Waiting Time: 0.00 mins (Immediate Attention)\n");
+    else
+        printf("Estimated Waiting Time: %.2f mins\n", waitTime);
+
+    printSeparator();
+}

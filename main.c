@@ -9,7 +9,7 @@ int main(void) {
         displayMainMenu();
         int choice = getValidIntInput(1, 6);
         switch (choice) {
-            case 1: printf("\n[Registration coming soon]\n"); break;
+            case 1: registerNewPatient(); break;
             case 2: printf("\n[Priority view coming soon]\n"); break;
             case 3: printf("\n[Patient list coming soon]\n"); break;
             case 4: printf("\n[Reports coming soon]\n"); break;
