@@ -1,0 +1,9 @@
+bin/
+obj/
+*.layout
+*.depend
+*.cbCache
+.DS_Store
+Thumbs.db
+*.tmp
+*.log
