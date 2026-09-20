@@ -175,13 +175,16 @@ void generatePatientID(char *buffer, int index) {
 
 //menu function
 void displayMainMenu(void) {
-    printf("\n");
+       printf("\n");
     printSeparator();
-    printf("    ╔══════════════════════════════════════════════════════╗\n");
-    printf("    ║   SMART HOSPITAL PATIENT & RESOURCE ALLOCATION       ║\n");
-    printf("    ║   University of Sri Jayewardenepura - CSC 1012       ║\n");
-    printf("    ╚══════════════════════════════════════════════════════╝\n");
+    printf("  ╔══════════════════════════════════════════════════════════════╗\n");
+    printf("  ║                                                              ║\n");
+    printf("  ║   %s v%s                                   ║\n", APP_NAME, APP_VERSION);
+    printf("  ║   CSC 1012 - University of Sri Jayewardenepura               ║\n");
+    printf("  ║                                                              ║\n");
+    printf("  ╚══════════════════════════════════════════════════════════════╝\n");
     printSeparator();
+
     printf("  [1]  Register New Patient\n");
     printf("  [2]  View Patients by Priority (Emergency Triage)\n");
     printf("  [3]  View All Registered Patients\n");

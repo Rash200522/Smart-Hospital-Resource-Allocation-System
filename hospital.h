@@ -1,6 +1,9 @@
 #ifndef HOSPITAL_H
 #define HOSPITAL_H
 
+#define APP_VERSION "1.0.0"
+#define APP_NAME    "Smart Hospital System"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
