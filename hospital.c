@@ -118,3 +118,50 @@ void printHeader(const char *title) {
 void generatePatientID(char *buffer, int index) {
     sprintf(buffer, "PAT-%d", 1001 + index);
 }
+
+
+//menu function
+void displayMainMenu(void) {
+    printf("\n");
+    printSeparator();
+    printf("       SMART HOSPITAL PATIENT & RESOURCE ALLOCATION SYSTEM\n");
+    printSeparator();
+    printf("  [1] Register New Patient\n");
+    printf("  [2] View Patients by Priority\n");
+    printf("  [3] View All Registered Patients\n");
+    printf("  [4] Generate Reports & Analytics\n");
+    printf("  [5] View Bed Occupancy Status\n");
+    printf("  [6] Save & Exit\n");
+    printSeparator();
+    printf("  Enter your choice (1-6): ");
+}
+
+void displaySpecialtyMenu(void) {
+    printf("\n--- Available Specialties ---\n");
+    printf("%-4s %-28s %-18s %-15s %-10s\n",
+           "ID", "Specialty Name", "Fee", "Time/Patient", "Cap");
+    printSeparator();
+    for (int i = 0; i < NUM_SPECIALTIES; i++) {
+        printf("%-4d %-28s LKR %-14.2f %-15d %-10d\n",
+               specialtyIDs[i], specialtyNames[i], specialtyFees[i],
+               specialtyTimes[i], specialtyCaps[i]);
+    }
+}
+
+void displayWardMenu(void) {
+    printf("\n--- Available Wards ---\n");
+    printf("%-4s %-28s %-18s %-12s %-10s\n",
+           "ID", "Ward Name", "Daily Rate", "Capacity", "Available");
+    printSeparator();
+    for (int i = 0; i < NUM_WARDS; i++) {
+        int avail = 0;
+        for (int j = 0; j < wardCapacities[i]; j++)
+            if (bedOccupancy[i][j] == 0) avail++;
+        printf("%-4d %-28s LKR %-15.2f %-12d %-10d\n",
+               wardIDs[i], wardNames[i], wardDailyRates[i],
+               wardCapacities[i], avail);
+    }
+}
+
+
+
