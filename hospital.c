@@ -516,24 +516,31 @@ void displayRevenueStatistics(void) {
 }
 
 void displayBedOccupancyReport(void) {
-    printf("\n--- Bed Occupancy Report ---\n\n");
-    printf("%-28s %-8s %-10s %-10s %-12s\n",
-           "Ward", "Total", "Occupied", "Available", "%");
+    printHeader("BED OCCUPANCY REPORT");
+
+    printf("  %-28s %-8s %-10s %-10s %-10s\n",
+           "Ward", "Total", "Occupied", "Available", "Rate");
     printSeparator();
+
     int tBeds = 0, tOcc = 0;
     for (int i = 0; i < NUM_WARDS; i++) {
         int cap = wardCapacities[i], occ = 0;
         for (int j = 0; j < cap; j++)
             if (bedOccupancy[i][j] == 1) occ++;
-        printf("%-28s %-8d %-10d %-10d %.1f%%\n",
+        printf("  %-28s %-8d %-10d %-10d %.1f%%\n",
                wardNames[i], cap, occ, cap - occ,
                cap ? occ*100.0/cap : 0);
-        tBeds += cap; tOcc += occ;
+        tBeds += cap;
+        tOcc += occ;
     }
+
     printSeparator();
-    printf("%-28s %-8d %-10d %-10d %.1f%%\n",
+    printf("  %-28s %-8d %-10d %-10d %.1f%%\n",
            "TOTAL", tBeds, tOcc, tBeds - tOcc,
            tBeds ? tOcc*100.0/tBeds : 0);
+    printSeparator();
+    printf("  Summary: %d of %d beds occupied across all wards.\n",
+           tOcc, tBeds);
 }
 
 void displayHighestPayingPatient(void) {
