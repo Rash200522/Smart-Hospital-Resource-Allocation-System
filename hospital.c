@@ -395,3 +395,50 @@ void displayBill(int idx) {
 
     printSeparator();
 }
+
+
+/* priority sorting */
+
+void sortPatientsByPriority(int sortedIndices[], int count) {
+    for (int i = 0; i < count - 1; i++) {
+        for (int j = 0; j < count - i - 1; j++) {
+            int a = sortedIndices[j];
+            int b = sortedIndices[j + 1];
+            int swap = 0;
+            if (patientUrgency[a] < patientUrgency[b]) swap = 1;
+            else if (patientUrgency[a] == patientUrgency[b] && a > b) swap = 1;
+            if (swap) {
+                int t = sortedIndices[j];
+                sortedIndices[j] = sortedIndices[j + 1];
+                sortedIndices[j + 1] = t;
+            }
+        }
+    }
+}
+
+void displayPatientsByPriority(void) {
+    if (patientCount == 0) {
+        printf("\n[INFO] No patients yet.\n");
+        return;
+    }
+    printHeader("PATIENTS BY PRIORITY");
+    int sorted[MAX_PATIENTS];
+    for (int i = 0; i < patientCount; i++) sorted[i] = i;
+    sortPatientsByPriority(sorted, patientCount);
+
+    printf("%-5s %-12s %-25s %-6s %-10s %-25s\n",
+           "Rank", "ID", "Name", "Age", "Urgency", "Specialty");
+    printSeparator();
+    for (int i = 0; i < patientCount; i++) {
+        int idx = sorted[i];
+        const char *ut[] = {"NORMAL", "URGENT", "CRITICAL"};
+        printf("%-5d %-12s %-25s %-6d %-10s %-25s\n",
+               i + 1, patientIDs[idx], patientNames[idx],
+               patientAges[idx], ut[patientUrgency[idx] - 1],
+               specialtyNames[patientSpecialtyIDs[idx] - 1]);
+    }
+    printSeparator();
+}
+
+
+
